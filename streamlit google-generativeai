@@ -1,0 +1,41 @@
+
+import streamlit as st
+import google.generativeai as genai
+
+# Page Configuration (Mobile aur Desktop dono ke liye)
+st.set_page_config(page_title="Python Auto Fixer", page_icon="🐍")
+
+# 1. Gemini API Setup
+# Yaad rahe: "YOUR_API_KEY" ki jagah apni asli Gemini API Key dalein
+genai.configure(api_key="YOUR_API_KEY_HERE")
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+# 2. App Interface
+st.title("🐍 Python Auto Fixer")
+st.markdown("### Write code, we fix the errors!")
+
+# Code Input Area
+user_code = st.text_area("Paste your Python code here:", height=250, placeholder="e.g., print('Hello' ")
+
+# Fix Button
+if st.button("Fix My Code ✨"):
+    if user_code.strip():
+        with st.spinner("Analyzing your code..."):
+            try:
+                # AI Prompt
+                prompt = f"Find and fix all syntax and logic errors in this Python code. Return ONLY the corrected code without any extra text or explanations:\n\n{user_code}"
+                
+                response = model.generate_content(prompt)
+                corrected_code = response.text
+                
+                # Showing Results
+                st.subheader("Corrected Code:")
+                st.code(corrected_code, language='python')
+                st.success("Errors have been fixed!")
+                
+            except Exception as e:
+                st.error(f"Error: {e}")
+    else:
+        st.warning("Pehle code to likhein!")
+
+st.info("Tip: Make sure your API key is active.")
